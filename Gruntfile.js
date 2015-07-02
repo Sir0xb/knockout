@@ -170,5 +170,5 @@ module.exports = function(grunt) {
     });
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'checktrailingspaces', 'build', 'test']);
+    grunt.registerTask('default', ['clean', 'checktrailingspaces', 'build', 'test', 'dist']);
 };
