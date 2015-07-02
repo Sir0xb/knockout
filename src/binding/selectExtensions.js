@@ -57,6 +57,11 @@
                         element.selectedIndex = selection;
                     }
                     break;
+                case "body":
+                    if ((value === null) || (value === undefined))
+                        value = "";
+                    element.innerHTML = value;
+                    break;
                 default:
                     if ((value === null) || (value === undefined))
                         value = "";
