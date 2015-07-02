@@ -53,6 +53,18 @@ var ko_subscribable_fn = {
         return subscription;
     },
 
+    beforeSubscribe: function (callback, callbackTarget) {
+        var _oldValue = null;
+
+        this.subscribe(function(oldValue){
+            _oldValue = oldValue;
+        }, null, 'beforeChange');
+
+        this.subscribe(function(newValue){
+            callback.call(callbackTarget, newValue, _oldValue);
+        });
+    },
+
     "notifySubscribers": function (valueToNotify, event) {
         event = event || defaultEvent;
         if (event === defaultEvent) {
@@ -143,6 +155,7 @@ var ko_subscribable_fn = {
 };
 
 ko.exportProperty(ko_subscribable_fn, 'subscribe', ko_subscribable_fn.subscribe);
+ko.exportProperty(ko_subscribable_fn, 'beforeSubscribe', ko_subscribable_fn.beforeSubscribe);
 ko.exportProperty(ko_subscribable_fn, 'extend', ko_subscribable_fn.extend);
 ko.exportProperty(ko_subscribable_fn, 'getSubscriptionsCount', ko_subscribable_fn.getSubscriptionsCount);
 
