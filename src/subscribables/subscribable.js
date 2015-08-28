@@ -53,6 +53,34 @@ var ko_subscribable_fn = {
         return subscription;
     },
 
+    onecSubscribe: function(callback, callbackTarget, event){
+        var self = this;
+
+        if(!self.isOnecSubscribe){
+            event = event || defaultEvent;
+            var boundCallback = callbackTarget ? callback.bind(callbackTarget) : callback;
+
+            var subscription = new ko.subscription(self, boundCallback, function () {
+                ko.utils.arrayRemoveItem(self._subscriptions[event], subscription);
+                if (self.afterSubscriptionRemove)
+                    self.afterSubscriptionRemove(event);
+            });
+
+            if (self.beforeSubscriptionAdd)
+                self.beforeSubscriptionAdd(event);
+
+            if (!self._subscriptions[event])
+                self._subscriptions[event] = [];
+            self._subscriptions[event].push(subscription);
+
+            self.isOnecSubscribe = true;
+
+            return subscription;
+        }else{
+            return self;
+        }
+    },
+
     beforeSubscribe: function (callback, callbackTarget) {
         var _oldValue = null;
 
@@ -63,6 +91,24 @@ var ko_subscribable_fn = {
         this.subscribe(function(newValue){
             callback.call(callbackTarget, newValue, _oldValue);
         });
+    },
+
+    onecBeforeSubscribe: function(callback, callbackTarget){
+        var self = this;
+
+        if(!self.isOnecBeforeSubscribe){
+            var _oldValue = null;
+
+            this.subscribe(function(oldValue){
+                _oldValue = oldValue;
+            }, null, 'beforeChange');
+
+            this.subscribe(function(newValue){
+                callback.call(callbackTarget, newValue, _oldValue);
+            });
+
+            self.isOnecBeforeSubscribe = true;
+        }
     },
 
     "notifySubscribers": function (valueToNotify, event) {
